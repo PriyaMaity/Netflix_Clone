@@ -14,10 +14,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-let corsOptions = {
-  origin: process.env.CLIENT_URL,
+const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5173"];
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS policy: origin ${origin} not allowed`));
+    }
+  },
   credentials: true,
-  optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
 
